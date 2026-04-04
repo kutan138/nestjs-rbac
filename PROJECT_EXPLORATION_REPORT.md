@@ -3,6 +3,7 @@
 ## 1. Overall Project Structure
 
 ### Root Level Structure
+
 ```
 rbca/
 ├── src/                          # Source code
@@ -25,6 +26,7 @@ rbca/
 ```
 
 ### Source Code Structure (src/)
+
 ```
 src/
 ├── main.ts                       # Application entry point
@@ -93,12 +95,14 @@ src/
 ## 2. package.json Contents
 
 ### Project Metadata
+
 - **Name**: rbca
 - **Version**: 0.0.1
 - **License**: UNLICENSED
 - **Private**: true
 
 ### Key Scripts
+
 ```json
 {
   "build": "nest build",
@@ -117,6 +121,7 @@ src/
 ```
 
 ### Core Dependencies
+
 - **NestJS**: ^11.0.1
   - `@nestjs/common` - Core framework
   - `@nestjs/core` - Core engine
@@ -148,6 +153,7 @@ src/
   - `reflect-metadata` - ^0.2.2 (reflection metadata)
 
 ### Development Dependencies
+
 - **Testing**: Jest ^30.0.0, Supertest ^7.0.0, ts-jest ^29.2.5
 - **Linting**: ESLint ^9.18.0, Prettier ^3.4.2
 - **TypeScript**: ^5.7.3
@@ -160,6 +166,7 @@ src/
 **Location**: `src/main.ts`
 
 ### Functionality
+
 The entry point of the application that:
 
 1. **Creates the NestJS application** from `AppModule`
@@ -195,11 +202,13 @@ The entry point of the application that:
 **Current State**: ⚠️ **NO DEDICATED LOGGER CONFIGURED**
 
 ### What's Currently Used
+
 - **Plain `console.log()`** in `main.ts` for startup messages only
 - No structured logging framework
 - No Winston, Pino, or other logger packages installed
 
 ### Logging Points Found
+
 ```
 src/main.ts: Lines 37-42 (startup logs only)
 - console.log(`🚀 App running at: http://localhost:${port}`)
@@ -207,6 +216,7 @@ src/main.ts: Lines 37-42 (startup logs only)
 ```
 
 ### Missing
+
 - ❌ No logger service injectable in modules
 - ❌ No request/response logging
 - ❌ No error logging framework
@@ -215,9 +225,10 @@ src/main.ts: Lines 37-42 (startup logs only)
 - ❌ No correlation IDs for tracing
 
 ### TypeORM Logging
+
 - Enabled in development mode only:
   ```typescript
-  logging: process.env.NODE_ENV === 'development'
+  logging: process.env.NODE_ENV === 'development';
   ```
 - Provides SQL query logs to console
 
@@ -236,23 +247,23 @@ src/main.ts: Lines 37-42 (startup logs only)
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-      load: [jwtConfig, appConfig]
+      load: [jwtConfig, appConfig],
     }),
-    
+
     // Database setup
     TypeOrmModule.forRoot(databaseConfig()),
-    
+
     // Feature modules
     UsersModule,
-    AuthModule
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     // Global guards (applied to all routes)
     { provide: APP_GUARD, useClass: JwtAuthGuard },
-    { provide: APP_GUARD, useClass: RolesGuard }
-  ]
+    { provide: APP_GUARD, useClass: RolesGuard },
+  ],
 })
 export class AppModule {}
 ```
@@ -278,6 +289,7 @@ export class AppModule {}
    - **RolesGuard**: Enforces role-based access (if `@Roles()` decorator present)
 
 ### Authentication Flow
+
 - JWT auth is required by default (unless marked with `@Public()`)
 - Refresh token rotation implemented
 - OAuth2 integration for Google and Apple
@@ -287,6 +299,7 @@ export class AppModule {}
 ## 6. Environment Files (.env & Config)
 
 ### .env (Production Values - **CHANGE THESE**)
+
 ```ini
 # App
 NODE_ENV=development
@@ -306,8 +319,8 @@ JWT_EXPIRES_IN=15m
 JWT_REFRESH_EXPIRES_IN=7d
 
 # Google OAuth
-GOOGLE_CLIENT_ID=394656904974-susi9f1f5kmlt43e530lg5vvgglqvjht.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
+GOOGLE_CLIENT_ID=xxxx
+GOOGLE_CLIENT_SECRET=xxxx
 GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback
 
 # Apple OAuth
@@ -319,6 +332,7 @@ APPLE_CALLBACK_URL=http://localhost:3000/auth/apple/callback
 ```
 
 ### .env.example (Template - Stripped for Security)
+
 ```ini
 # App
 NODE_ENV=development
@@ -335,12 +349,14 @@ DB_NAME=rbca
 ### Configuration Files
 
 #### 1. **app.config.ts** - Application Settings
+
 ```typescript
 // Exports: { port: number, nodeEnv: string }
 // Reads: PORT, NODE_ENV env vars
 ```
 
 #### 2. **database.config.ts** - TypeORM Setup
+
 ```typescript
 // PostgreSQL connection
 // Entities: User, RefreshToken
@@ -349,16 +365,18 @@ DB_NAME=rbca
 ```
 
 #### 3. **jwt.config.ts** - JWT Settings
+
 ```typescript
 interface JwtConfig {
-  secret: string              // Access token secret
-  refreshSecret: string       // Refresh token secret
-  expiresIn: string          // Access token TTL (default: 15m)
-  refreshExpiresIn: string   // Refresh token TTL (default: 7d)
+  secret: string; // Access token secret
+  refreshSecret: string; // Refresh token secret
+  expiresIn: string; // Access token TTL (default: 15m)
+  refreshExpiresIn: string; // Refresh token TTL (default: 7d)
 }
 ```
 
 #### 4. **validation.ts** - Environment Validation
+
 - File exists but is empty (no validation rules implemented)
 
 ---
@@ -366,6 +384,7 @@ interface JwtConfig {
 ## 7. Key Architecture Insights
 
 ### Authentication System
+
 - **Multi-strategy support**:
   - Local (email/password with bcrypt)
   - JWT with refresh token rotation
@@ -383,10 +402,12 @@ interface JwtConfig {
   - `user` - Standard access (default)
 
 ### Database Schema
+
 - **Users Table**: UUID PK, email unique, role enum, OAuth IDs
 - **RefreshTokens Table**: Token hash, expiry, revocation tracking
 
 ### Security Features
+
 - Password hashing with bcrypt (10 salt rounds)
 - JWT-based stateless auth
 - Global JWT guard (opt-out with `@Public()`)
@@ -394,6 +415,7 @@ interface JwtConfig {
 - HTTP-only token storage recommended (client-side responsibility)
 
 ### Code Organization
+
 - **Modular structure** (Auth, Users modules)
 - **DTOs** for validation and type safety
 - **Service layer** for business logic separation
@@ -402,6 +424,7 @@ interface JwtConfig {
 - **Decorators** for metadata marking (`@Public()`, `@Roles()`, `@CurrentUser()`)
 
 ### Missing/Incomplete
+
 - ❌ No structured logging
 - ❌ No error handling filters
 - ❌ No request interceptors
@@ -417,6 +440,7 @@ interface JwtConfig {
 **Project Type**: NestJS REST API with Role-Based Access Control
 
 **Status**: Development-ready, but needs:
+
 1. Production environment configuration
 2. Structured logging implementation
 3. Comprehensive error handling
@@ -424,6 +448,7 @@ interface JwtConfig {
 5. Security audit (exposed credentials)
 
 **Tech Stack**:
+
 - Framework: NestJS 11
 - Database: PostgreSQL + TypeORM
 - Auth: JWT + Passport + OAuth2
