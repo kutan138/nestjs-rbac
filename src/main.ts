@@ -1,10 +1,14 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+
+  // Dùng pino làm logger mặc định cho toàn bộ NestJS
+  app.useLogger(app.get(Logger));
 
   // Global validation
   app.useGlobalPipes(
@@ -32,13 +36,11 @@ async function bootstrap() {
     swaggerOptions: { persistAuthorization: true },
   });
 
-  await app.listen(process.env.PORT ?? 3000);
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port);
 
-  console.log(
-    `🚀 App running at: http://localhost:${process.env.PORT ?? 3000}`,
-  );
-  console.log(
-    `📖 Swagger docs: http://localhost:${process.env.PORT ?? 3000}/api/docs`,
-  );
+  const logger = app.get(Logger);
+  logger.log(`🚀 App running at: http://localhost:${port}`, 'Bootstrap');
+  logger.log(`📖 Swagger docs: http://localhost:${port}/api/docs`, 'Bootstrap');
 }
 void bootstrap();
