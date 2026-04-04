@@ -306,11 +306,11 @@ NODE_ENV=development
 PORT=3000
 
 # Database
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASS=postgres
-DB_NAME=rbca
+DB_HOST=xxx
+DB_PORT=xxx
+DB_USER=xxx
+DB_PASS=xxx
+DB_NAME=xxx
 
 # JWT (⚠️ CHANGE IN PRODUCTION)
 JWT_SECRET=change-me-jwt-secret-at-least-32-chars
@@ -339,11 +339,11 @@ NODE_ENV=development
 PORT=3000
 
 # Database
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASS=postgres
-DB_NAME=rbca
+DB_HOST=xxxx
+DB_PORT=xxxxx
+DB_USER=xxxx
+DB_PASS=xxx
+DB_NAME=xxxx
 ```
 
 ### Configuration Files
