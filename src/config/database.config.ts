@@ -10,6 +10,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => ({
   password: process.env.DB_PASS ?? 'postgres',
   database: process.env.DB_NAME ?? 'rbca',
   entities: [User, RefreshToken],
-  synchronize: process.env.NODE_ENV !== 'production',
+  // Tắt synchronize – dùng migration để quản lý schema an toàn
+  synchronize: false,
   logging: process.env.NODE_ENV === 'development',
 });
