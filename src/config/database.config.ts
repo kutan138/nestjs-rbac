@@ -1,6 +1,4 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { RefreshToken } from '../modules/auth/entities/refresh-token.entity';
-import { User } from '../modules/users/entities/user.entity';
 
 export const databaseConfig = (): TypeOrmModuleOptions => ({
   type: 'postgres',
@@ -9,7 +7,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => ({
   username: process.env.DB_USER ?? 'postgres',
   password: process.env.DB_PASS ?? 'postgres',
   database: process.env.DB_NAME ?? 'rbca',
-  entities: [User, RefreshToken],
+  entities: [__dirname + '/../**/*.entity.{ts,js}'],
   // Tắt synchronize – dùng migration để quản lý schema an toàn
   synchronize: false,
   logging: process.env.NODE_ENV === 'development',

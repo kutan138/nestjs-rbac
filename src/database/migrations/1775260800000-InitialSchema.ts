@@ -22,14 +22,17 @@ export class InitialSchema1775260800000 implements MigrationInterface {
   //  UP
   // ─────────────────────────────────────────────
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // ── ENUM ────────────────────────────────────
+    // ── ENUM (idempotent) ────────────────────────
     await queryRunner.query(`
-      CREATE TYPE "users_role_enum" AS ENUM ('admin', 'user')
+      DO $$ BEGIN
+        CREATE TYPE "users_role_enum" AS ENUM ('admin', 'user');
+      EXCEPTION WHEN duplicate_object THEN null;
+      END $$
     `);
 
     // ── TABLE: users ────────────────────────────
     await queryRunner.query(`
-      CREATE TABLE "users" (
+      CREATE TABLE IF NOT EXISTS "users" (
         "id"           UUID          NOT NULL DEFAULT gen_random_uuid(),
         "name"         VARCHAR(100)  NOT NULL,
         "email"        VARCHAR(255)  NOT NULL,
@@ -50,17 +53,17 @@ export class InitialSchema1775260800000 implements MigrationInterface {
 
     // Index on role — used by RBAC guard
     await queryRunner.query(`
-      CREATE INDEX "IDX_users_role" ON "users" ("role")
+      CREATE INDEX IF NOT EXISTS "IDX_users_role" ON "users" ("role")
     `);
 
     // Index on isActive — soft-delete / active-filter queries
     await queryRunner.query(`
-      CREATE INDEX "IDX_users_isActive" ON "users" ("isActive")
+      CREATE INDEX IF NOT EXISTS "IDX_users_isActive" ON "users" ("isActive")
     `);
 
     // ── TABLE: refresh_tokens ───────────────────
     await queryRunner.query(`
-      CREATE TABLE "refresh_tokens" (
+      CREATE TABLE IF NOT EXISTS "refresh_tokens" (
         "id"          UUID         NOT NULL DEFAULT gen_random_uuid(),
         "tokenHash"   VARCHAR      NOT NULL,
         "userId"      UUID         NOT NULL,
@@ -76,13 +79,13 @@ export class InitialSchema1775260800000 implements MigrationInterface {
 
     // Composite index used to find valid (non-revoked) tokens for a user
     await queryRunner.query(`
-      CREATE INDEX "IDX_refresh_tokens_userId_revokedAt"
+      CREATE INDEX IF NOT EXISTS "IDX_refresh_tokens_userId_revokedAt"
         ON "refresh_tokens" ("userId", "revokedAt")
     `);
 
     // Fast lookup by hashed token value
     await queryRunner.query(`
-      CREATE INDEX "IDX_refresh_tokens_tokenHash"
+      CREATE INDEX IF NOT EXISTS "IDX_refresh_tokens_tokenHash"
         ON "refresh_tokens" ("tokenHash")
     `);
   }
