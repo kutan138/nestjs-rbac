@@ -29,8 +29,8 @@ export class CreateUserDto {
 
   @ApiPropertyOptional({
     enum: UserRole,
-    default: UserRole.USER,
-    description: 'Vai trò người dùng',
+    default: UserRole.EDITOR,
+    description: 'Vai trò: admin | editor | viewer',
   })
   @IsOptional()
   @IsEnum(UserRole)
