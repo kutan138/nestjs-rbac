@@ -25,7 +25,7 @@ export class InitialSchema1775260800000 implements MigrationInterface {
     // ── ENUM (idempotent) ────────────────────────
     await queryRunner.query(`
       DO $$ BEGIN
-        CREATE TYPE "users_role_enum" AS ENUM ('admin', 'user');
+        CREATE TYPE "users_role_enum" AS ENUM ('admin', 'editor', 'viewer');
       EXCEPTION WHEN duplicate_object THEN null;
       END $$
     `);
@@ -39,7 +39,7 @@ export class InitialSchema1775260800000 implements MigrationInterface {
         "passwordHash" VARCHAR               ,
         "googleId"     VARCHAR(255)          ,
         "appleId"      VARCHAR(255)          ,
-        "role"         "users_role_enum"     NOT NULL DEFAULT 'user',
+        "role"         "users_role_enum"     NOT NULL DEFAULT 'editor',
         "isActive"     BOOLEAN       NOT NULL DEFAULT true,
         "createdAt"    TIMESTAMPTZ   NOT NULL DEFAULT now(),
         "updatedAt"    TIMESTAMPTZ   NOT NULL DEFAULT now(),

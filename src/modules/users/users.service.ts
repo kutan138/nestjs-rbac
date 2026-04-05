@@ -99,7 +99,7 @@ export class UsersService {
       passwordHash: null,
       googleId: profile.googleId ?? null,
       appleId: profile.appleId ?? null,
-      role: UserRole.USER,
+      role: UserRole.EDITOR,
     });
     return this.usersRepository.save(user);
   }

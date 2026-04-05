@@ -9,7 +9,8 @@ import {
 
 export enum UserRole {
   ADMIN = 'admin',
-  USER = 'user',
+  EDITOR = 'editor',
+  VIEWER = 'viewer',
 }
 
 @Entity('users')
@@ -37,8 +38,8 @@ export class User {
   @Column({ type: 'varchar', nullable: true, unique: true, length: 255 })
   appleId!: string | null;
 
-  @ApiProperty({ enum: UserRole, default: UserRole.USER })
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  @ApiProperty({ enum: UserRole, default: UserRole.EDITOR })
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.EDITOR })
   role!: UserRole;
 
   @ApiProperty({ example: true })

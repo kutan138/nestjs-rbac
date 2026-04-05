@@ -35,7 +35,10 @@ export class UpdateUserDto {
   @MinLength(8)
   password?: string;
 
-  @ApiPropertyOptional({ enum: UserRole, description: 'Vai trò người dùng' })
+  @ApiPropertyOptional({
+    enum: UserRole,
+    description: 'Vai trò: admin | editor | viewer',
+  })
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;

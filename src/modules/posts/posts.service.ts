@@ -93,18 +93,20 @@ export class PostsService {
   // ── Private helpers ───────────────────────────────────────────────────────
 
   /**
-   * Chỉ tác giả hoặc admin mới được sửa / xoá bài.
+   * Kiểm tra quyền sửa / xoá bài viết:
+   *  - ADMIN  → pass với mọi bài
+   *  - EDITOR → chỉ được với bài của chính mình
+   *  - VIEWER → luôn bị từ chối (đã bị @Roles guard chặn ở controller,
+   *             service giữ defensive-check)
    */
   private assertCanModify(
     post: Post,
     requesterId: string,
     requesterRole: UserRole,
   ): void {
-    const isOwner = post.authorId === requesterId;
-    const isAdmin = requesterRole === UserRole.ADMIN;
+    if (requesterRole === UserRole.ADMIN) return;
+    if (requesterRole === UserRole.EDITOR && post.authorId === requesterId) return;
 
-    if (!isOwner && !isAdmin) {
-      throw new ForbiddenException('Bạn không có quyền thực hiện thao tác này');
-    }
+    throw new ForbiddenException('Bạn không có quyền thực hiện thao tác này');
   }
 }

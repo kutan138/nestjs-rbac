@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
-  IsEnum,
+  IsIn,
   IsOptional,
   IsString,
   Matches,
@@ -33,8 +33,16 @@ export class RegisterDto {
   })
   password!: string;
 
-  @ApiPropertyOptional({ enum: UserRole, default: UserRole.USER })
+  // Chỉ cho phép tự đăng ký với role EDITOR hoặc VIEWER.
+  // ADMIN phải được tạo qua POST /users (admin-only).
+  @ApiPropertyOptional({
+    enum: [UserRole.EDITOR, UserRole.VIEWER],
+    default: UserRole.EDITOR,
+    description: 'Chỉ cho phép: editor | viewer (admin cần tạo qua /users)',
+  })
   @IsOptional()
-  @IsEnum(UserRole)
+  @IsIn([UserRole.EDITOR, UserRole.VIEWER], {
+    message: 'role phải là editor hoặc viewer',
+  })
   role?: UserRole;
 }

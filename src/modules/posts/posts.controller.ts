@@ -21,7 +21,9 @@ import {
 } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Public } from '../auth/decorators/public.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 import type { RequestUser } from '../auth/strategies/jwt.strategy';
+import { UserRole } from '../users/entities/user.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { QueryPostDto } from './dto/query-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -38,7 +40,8 @@ export class PostsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Tạo bài viết mới (cần đăng nhập)' })
+  @Roles(UserRole.ADMIN, UserRole.EDITOR)
+  @ApiOperation({ summary: 'Tạo bài viết mới (ADMIN hoặc EDITOR)' })
   @ApiCreatedResponse({ type: PostEntity, description: 'Bài viết đã được tạo' })
   create(
     @Body() createPostDto: CreatePostDto,
@@ -71,7 +74,8 @@ export class PostsController {
   // ── PATCH /posts/:id ──────────────────────────────────────────────────────
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Cập nhật bài viết (chủ sở hữu hoặc admin)' })
+  @Roles(UserRole.ADMIN, UserRole.EDITOR)
+  @ApiOperation({ summary: 'Cập nhật bài viết (ADMIN: any | EDITOR: own)' })
   @ApiOkResponse({ type: PostEntity, description: 'Bài viết sau khi cập nhật' })
   @ApiNotFoundResponse({ description: 'Không tìm thấy bài viết' })
   update(
@@ -79,17 +83,18 @@ export class PostsController {
     @Body() updatePostDto: UpdatePostDto,
     @CurrentUser() user: RequestUser,
   ) {
-    return this.postsService.update(id, updatePostDto, user.id, user.role);
+    return this.postsService.update(id, updatePostDto, user.id, user.role as UserRole);
   }
 
   // ── DELETE /posts/:id ─────────────────────────────────────────────────────
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Xoá bài viết (chủ sở hữu hoặc admin)' })
+  @Roles(UserRole.ADMIN, UserRole.EDITOR)
+  @ApiOperation({ summary: 'Xoá bài viết (ADMIN: any | EDITOR: own)' })
   @ApiNoContentResponse({ description: 'Xoá thành công' })
   @ApiNotFoundResponse({ description: 'Không tìm thấy bài viết' })
   remove(@Param('id') id: string, @CurrentUser() user: RequestUser) {
-    return this.postsService.remove(id, user.id, user.role);
+    return this.postsService.remove(id, user.id, user.role as UserRole);
   }
 }
