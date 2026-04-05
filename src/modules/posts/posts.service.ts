@@ -105,7 +105,8 @@ export class PostsService {
     requesterRole: UserRole,
   ): void {
     if (requesterRole === UserRole.ADMIN) return;
-    if (requesterRole === UserRole.EDITOR && post.authorId === requesterId) return;
+    if (requesterRole === UserRole.EDITOR && post.authorId === requesterId)
+      return;
 
     throw new ForbiddenException('Bạn không có quyền thực hiện thao tác này');
   }

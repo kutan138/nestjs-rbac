@@ -83,7 +83,7 @@ export class PostsController {
     @Body() updatePostDto: UpdatePostDto,
     @CurrentUser() user: RequestUser,
   ) {
-    return this.postsService.update(id, updatePostDto, user.id, user.role as UserRole);
+    return this.postsService.update(id, updatePostDto, user.id, user.role);
   }
 
   // ── DELETE /posts/:id ─────────────────────────────────────────────────────
@@ -95,6 +95,6 @@ export class PostsController {
   @ApiNoContentResponse({ description: 'Xoá thành công' })
   @ApiNotFoundResponse({ description: 'Không tìm thấy bài viết' })
   remove(@Param('id') id: string, @CurrentUser() user: RequestUser) {
-    return this.postsService.remove(id, user.id, user.role as UserRole);
+    return this.postsService.remove(id, user.id, user.role);
   }
 }
