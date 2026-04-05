@@ -31,7 +31,7 @@ export class Post {
   content!: string;
 
   @ApiPropertyOptional({ example: 'tieu-de-bai-viet' })
-  @Column({ length: 300, unique: true, nullable: true })
+  @Column({ type: 'varchar', length: 300, unique: true, nullable: true })
   slug!: string | null;
 
   @ApiProperty({ enum: PostStatus, default: PostStatus.DRAFT })

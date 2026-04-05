@@ -19,14 +19,17 @@ export class PostsSchema1775260900000 implements MigrationInterface {
   //  UP
   // ─────────────────────────────────────────────
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // ── ENUM ─────────────────────────────────────
+    // ── ENUM (idempotent) ─────────────────────────
     await queryRunner.query(`
-      CREATE TYPE "posts_status_enum" AS ENUM ('draft', 'published', 'archived')
+      DO $$ BEGIN
+        CREATE TYPE "posts_status_enum" AS ENUM ('draft', 'published', 'archived');
+      EXCEPTION WHEN duplicate_object THEN null;
+      END $$
     `);
 
     // ── TABLE: posts ─────────────────────────────
     await queryRunner.query(`
-      CREATE TABLE "posts" (
+      CREATE TABLE IF NOT EXISTS "posts" (
         "id"        UUID                  NOT NULL DEFAULT gen_random_uuid(),
         "title"     VARCHAR(255)          NOT NULL,
         "content"   TEXT                  NOT NULL,
@@ -44,11 +47,11 @@ export class PostsSchema1775260900000 implements MigrationInterface {
     `);
 
     await queryRunner.query(`
-      CREATE INDEX "IDX_posts_authorId" ON "posts" ("authorId")
+      CREATE INDEX IF NOT EXISTS "IDX_posts_authorId" ON "posts" ("authorId")
     `);
 
     await queryRunner.query(`
-      CREATE INDEX "IDX_posts_status" ON "posts" ("status")
+      CREATE INDEX IF NOT EXISTS "IDX_posts_status" ON "posts" ("status")
     `);
   }
 
