@@ -11,6 +11,7 @@ import jwtConfig from './config/jwt.config';
 import { RolesGuard } from './common/guards/roles.guard';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { AuthModule } from './modules/auth/auth.module';
+import { PostsModule } from './modules/posts/posts.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -41,6 +42,7 @@ import { UsersModule } from './modules/users/users.module';
     TypeOrmModule.forRoot(databaseConfig()),
     UsersModule,
     AuthModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [
