@@ -6,9 +6,11 @@ export const databaseConfig = (): TypeOrmModuleOptions => ({
   port: parseInt(process.env.DB_PORT ?? '5432', 10),
   username: process.env.DB_USER ?? 'postgres',
   password: process.env.DB_PASS ?? 'postgres',
-  database: process.env.DB_NAME ?? 'rbca',
+  database: process.env.DB_NAME ?? 'postgres',
   entities: [__dirname + '/../**/*.entity.{ts,js}'],
   // Tắt synchronize – dùng migration để quản lý schema an toàn
   synchronize: false,
   logging: process.env.NODE_ENV === 'development',
+  ssl:
+    process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
 });

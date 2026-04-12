@@ -12,9 +12,11 @@ export const AppDataSource = new DataSource({
   port: parseInt(process.env.DB_PORT ?? '5432', 10),
   username: process.env.DB_USER ?? 'postgres',
   password: process.env.DB_PASS ?? 'postgres',
-  database: process.env.DB_NAME ?? 'rbca',
+  database: process.env.DB_NAME ?? 'postgres',
   entities: [User, RefreshToken],
   migrations: ['src/database/migrations/*.ts'],
   migrationsTableName: 'typeorm_migrations',
   logging: process.env.NODE_ENV === 'development',
+  ssl:
+    process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
 });
